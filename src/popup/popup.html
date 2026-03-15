@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>CBT Bridge AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 340px;
+      font-family: "Inter", "Noto Sans JP", system-ui, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      padding: 20px 20px 18px;
+      background: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%);
+      color: white;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: "";
+      position: absolute; top: -30px; right: -30px;
+      width: 100px; height: 100px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+    }
+    .header h1 {
+      font-size: 17px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      letter-spacing: -0.02em;
+    }
+    .header p {
+      font-size: 11px; opacity: 0.7; margin-top: 3px;
+      letter-spacing: 0.04em; font-weight: 400;
+    }
+
+    /* ---- Content ---- */
+    .content { padding: 12px 16px 8px; }
+
+    .status {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 14px;
+      background: white;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .status-label {
+      font-size: 13px; font-weight: 600; color: #334155;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    /* Toggle */
+    .toggle { position: relative; width: 44px; height: 24px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle .slider {
+      position: absolute; inset: 0;
+      background: #cbd5e1; border-radius: 12px;
+      cursor: pointer; transition: 0.3s;
+    }
+    .toggle .slider:before {
+      content: "";
+      position: absolute; width: 18px; height: 18px;
+      left: 3px; bottom: 3px;
+      background: white; border-radius: 50%;
+      transition: 0.3s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .toggle input:checked + .slider { background: #3b82f6; }
+    .toggle input:checked + .slider:before { transform: translateX(20px); }
+
+    /* Sections */
+    .section { margin-bottom: 10px; }
+    .section-title {
+      font-size: 10px; color: #94a3b8;
+      text-transform: uppercase; font-weight: 600;
+      margin-bottom: 8px; letter-spacing: 0.08em;
+    }
+    .mode-group { display: flex; gap: 6px; }
+    .mode-btn {
+      flex: 1;
+      padding: 9px 6px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      background: white;
+      font-size: 12px; font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+      font-family: inherit;
+      color: #475569;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+      line-height: 1.2;
+    }
+    .mode-btn:hover { border-color: #93c5fd; background: #f0f7ff; }
+    .mode-btn.active {
+      background: #3b82f6; color: white; border-color: #3b82f6;
+      box-shadow: 0 2px 8px rgba(59,130,246,0.25);
+    }
+    .mode-btn.active svg { stroke: white; }
+    .mode-btn.disabled {
+      opacity: 0.35; pointer-events: none; cursor: not-allowed;
+    }
+    .section.disabled .section-title { opacity: 0.35; }
+    .mode-btn svg {
+      width: 14px; height: 14px; flex-shrink: 0;
+      stroke: #64748b; stroke-width: 2;
+      fill: none; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* PDF button */
+    .pdf-btn-primary {
+      display: none; width: 100%; padding: 11px; font-size: 13px; font-weight: 600;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: white; border: none; border-radius: 10px; cursor: pointer;
+      margin-bottom: 6px; font-family: inherit;
+      display: none; align-items: center; justify-content: center; gap: 6px;
+      transition: opacity 0.15s;
+    }
+    .pdf-btn-primary:hover { opacity: 0.9; }
+    .pdf-btn-primary svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2; }
+
+    /* Quality info */
+    .quality-info {
+      font-size: 10px; color: #94a3b8; margin-top: 6px;
+      text-align: center; font-weight: 400;
+    }
+
+    /* Footer */
+    .footer {
+      display: flex; gap: 8px; align-items: center;
+      padding: 10px 16px 12px;
+      border-top: 1px solid #f1f5f9;
+      background: white;
+    }
+    .footer-btn {
+      padding: 9px 14px;
+      border: 1px solid #e2e8f0; border-radius: 10px;
+      background: white; font-size: 12px; font-weight: 500;
+      cursor: pointer; text-align: center; font-family: inherit;
+      transition: all 0.15s; color: #475569;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .footer-btn:hover { background: #f1f5f9; border-color: #cbd5e1; }
+    .footer-btn svg {
+      width: 14px; height: 14px; stroke: #64748b;
+      stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .footer-status {
+      margin-left: auto;
+      font-size: 10px; font-weight: 500; color: #94a3b8;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .footer-status svg { width: 12px; height: 12px; stroke-width: 2; fill: none; }
+    .footer-status.connected { color: #16a34a; }
+    .footer-status.connected svg { stroke: #16a34a; }
+    .footer-status.disconnected { color: #dc2626; }
+    .footer-status.disconnected svg { stroke: #dc2626; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg>
+      CBT Bridge AI
+    </h1>
+    <p>専門家のためのAI翻訳サービス</p>
+  </div>
+
+  <div class="content">
+    <div class="status">
+      <span class="status-label">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12s2.545-5 7-5c4.454 0 7 5 7 5s-2.546 5-7 5c-4.455 0-7-5-7-5z"/><path d="M12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
+        翻訳を有効化
+      </span>
+      <label class="toggle">
+        <input type="checkbox" id="toggle-enabled" />
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="section">
+      <div class="section-title">翻訳方法</div>
+      <div class="mode-group">
+
+        <button class="mode-btn" id="trigger-select">
+          <svg viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+          選択のみ
+        </button>
+        <button class="mode-btn" id="trigger-page">
+          <svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+          ページ全体
+        </button>
+      </div>
+    </div>
+
+    <div class="section" id="section-display" data-section="display">
+      <div class="section-title">表示位置</div>
+      <div class="mode-group">
+        <button class="mode-btn active" id="display-inline">
+          <svg viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+          画面の中
+        </button>
+        <button class="mode-btn" id="display-popup">
+          <svg viewBox="0 0 24 24"><rect width="18" height="7" x="3" y="14" rx="2"/><rect width="18" height="7" x="3" y="3" rx="2"/></svg>
+          POPアップ
+        </button>
+
+      </div>
+    </div>
+
+    <div class="section disabled" id="section-screen" data-section="screen">
+      <div class="section-title">画面モード</div>
+      <div class="mode-group">
+
+        <button class="mode-btn disabled" id="split-horizontal">
+          <svg viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 3v18"/></svg>
+          左右分割
+        </button>
+        <button class="mode-btn disabled" id="split-vertical">
+          <svg viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 12h18"/></svg>
+          上下分割
+        </button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">翻訳品質</div>
+      <div class="mode-group">
+        <button class="mode-btn" id="quality-speed">
+          <svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          速読
+        </button>
+        <button class="mode-btn active" id="quality-standard">
+          <svg viewBox="0 0 24 24"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
+          標準
+        </button>
+        <button class="mode-btn" id="quality-premium">
+          <svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg>
+          高品質
+        </button>
+      </div>
+      <div class="quality-info" id="quality-info">Flash — バランス型</div>
+    </div>
+
+    <div class="section" style="margin-bottom: 0;">
+      <button class="pdf-btn-primary" id="btn-pdf-current">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m2 12 5.1 2.8"/><path d="m22 12-5.1 2.8"/><path d="m8.6 8.6 2.8 5.1"/><path d="m15.4 8.6-2.8 5.1"/></svg>
+        このPDFを翻訳
+      </button>
+      <button class="mode-btn" id="btn-pdf-upload" style="width: 100%; margin-bottom: 6px;">
+        <svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+        PDFファイル翻訳
+      </button>
+      <button class="mode-btn" id="btn-glossary" style="width: 100%;">
+        <svg viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg>
+        用語辞典
+      </button>
+      <input type="file" id="pdf-file-input" accept=".pdf" style="display: none;" />
+      <div id="pdf-status" style="font-size: 11px; color: #94a3b8; margin-top: 4px; text-align: center;"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <button class="footer-btn" id="btn-settings">
+      <svg viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+      設定
+    </button>
+    <span id="api-status" class="footer-status disconnected">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+      APIキー未設定
+    </span>
+  </div>
+
+  <script src="popup.ts" type="module"></script>
+</body>
+</html>

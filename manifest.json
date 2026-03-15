@@ -1,0 +1,62 @@
+{
+  "manifest_version": 3,
+  "name": "CBT Bridge AI",
+  "version": "0.1.0",
+  "description": "AI-powered EN→JP academic translator for CBT & mental health — bridging language barriers",
+
+  "permissions": [
+    "activeTab",
+    "sidePanel",
+    "contextMenus",
+    "storage",
+    "tabs"
+  ],
+
+  "host_permissions": [
+    "<all_urls>"
+  ],
+
+  "background": {
+    "service_worker": "src/background/service-worker.ts",
+    "type": "module"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content/content-script.ts"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "side_panel": {
+    "default_path": "src/sidepanel/sidepanel.html"
+  },
+
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "src/assets/icons/icon-16.png",
+      "48": "src/assets/icons/icon-48.png",
+      "128": "src/assets/icons/icon-128.png"
+    }
+  },
+
+  "options_page": "src/options/options.html",
+
+  "icons": {
+    "16": "src/assets/icons/icon-16.png",
+    "48": "src/assets/icons/icon-48.png",
+    "128": "src/assets/icons/icon-128.png"
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/splitview/splitview.html",
+        "src/pdfviewer/pdfviewer.html"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

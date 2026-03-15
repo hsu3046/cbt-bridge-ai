@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>CBT Bridge AI — PDF翻訳</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Inter", "Noto Sans JP", system-ui, sans-serif;
+      background: #0f172a; color: #e2e8f0;
+      height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+    }
+    .viewer-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 20px; background: linear-gradient(135deg, #1e293b, #334155);
+      border-bottom: 1px solid #475569; flex-shrink: 0;
+    }
+    .viewer-title { display: flex; align-items: center; gap: 8px; }
+    .viewer-logo { font-size: 20px; }
+    .viewer-title h1 { font-size: 14px; font-weight: 700; color: #f1f5f9; }
+    .viewer-subtitle { font-weight: 400; color: #94a3b8; margin-left: 6px; }
+    .viewer-meta { font-size: 12px; color: #94a3b8; max-width: 50%; text-align: right; }
+
+    .viewer-main { display: flex; flex: 1; overflow: hidden; }
+    .viewer-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .viewer-pdf { border-right: 1px solid #475569; }
+    .panel-header {
+      padding: 8px 16px; font-size: 12px; font-weight: 600; color: #94a3b8;
+      background: #1e293b; border-bottom: 1px solid #334155;
+      text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;
+    }
+    .pdf-frame { flex: 1; border: none; background: #1a1a2e; }
+
+    /* State screens */
+    .state-screen {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 24px; overflow-y: auto;
+    }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid #334155; border-top-color: #3b82f6;
+      border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .state-screen p { font-size: 13px; color: #94a3b8; }
+
+    /* Sections panel */
+    .sections-panel {
+      flex: 1; display: flex; flex-direction: column; overflow: hidden;
+    }
+    .sections-header {
+      padding: 12px 16px; background: #1e293b; border-bottom: 1px solid #334155;
+      flex-shrink: 0;
+    }
+    .sections-header h2 { font-size: 14px; color: #f1f5f9; margin-bottom: 4px; }
+    .sections-header .doc-info { font-size: 11px; color: #94a3b8; }
+    .sections-header .cost-info {
+      display: inline-block; margin-top: 6px; padding: 3px 10px;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      border-radius: 12px; font-size: 11px; font-weight: 600;
+    }
+    .page-warning {
+      margin: 8px 16px; padding: 8px 12px; background: #f59e0b22;
+      border: 1px solid #f59e0b44; border-radius: 8px;
+      font-size: 11px; color: #fbbf24; flex-shrink: 0;
+    }
+    .sections-body { flex: 1; overflow-y: auto; padding: 8px; }
+
+    /* Section row */
+    .section-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 8px; margin-bottom: 4px;
+      background: #1e293b; border: 1px solid #334155;
+      transition: border-color 0.2s;
+    }
+    .section-row:hover { border-color: #475569; }
+    .section-row.done { border-color: #22c55e44; }
+    .section-row.translating { border-color: #f59e0b; }
+    .s-info { flex: 1; min-width: 0; }
+    .s-name { font-size: 13px; font-weight: 500; }
+    .s-detail { font-size: 10px; color: #64748b; margin-top: 2px; }
+    .s-badge {
+      font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 600;
+      flex-shrink: 0;
+    }
+    .s-badge.pro { background: #7c3aed22; color: #a78bfa; }
+    .s-badge.flash { background: #3b82f622; color: #60a5fa; }
+    .s-btn {
+      padding: 5px 12px; border: none; border-radius: 6px;
+      font-size: 11px; font-weight: 600; cursor: pointer;
+      font-family: inherit; flex-shrink: 0; transition: all 0.15s;
+    }
+    .s-btn-translate { background: #3b82f6; color: white; }
+    .s-btn-translate:hover { background: #2563eb; }
+    .s-btn-translate:disabled { background: #334155; color: #64748b; cursor: not-allowed; }
+    .s-btn-done { background: #22c55e22; color: #4ade80; cursor: default; }
+    .s-btn-skip { background: #64748b22; color: #64748b; cursor: default; }
+    .s-btn-loading { background: #f59e0b; color: #1e293b; cursor: wait; }
+
+    /* Translation result (inline expand) */
+    .s-result {
+      display: none; padding: 12px 16px; margin: 0 12px 4px;
+      background: #0f172a; border: 1px solid #334155; border-radius: 8px;
+      font-size: 13px; color: #cbd5e1; line-height: 1.8; white-space: pre-wrap;
+    }
+    .s-result.visible { display: block; }
+    .s-result-meta { font-size: 10px; color: #64748b; margin-top: 8px; }
+
+    /* Footer */
+    .viewer-footer {
+      display: flex; align-items: center; gap: 16px;
+      padding: 8px 20px; background: #1e293b;
+      border-top: 1px solid #475569; flex-shrink: 0;
+    }
+    .footer-left { flex: 1; display: flex; align-items: center; gap: 12px; }
+    .footer-cost { font-size: 12px; color: #94a3b8; }
+    .footer-budget { font-size: 11px; color: #64748b; }
+    .budget-input {
+      width: 60px; padding: 2px 6px; background: #0f172a;
+      border: 1px solid #475569; border-radius: 4px;
+      color: #f1f5f9; font-size: 11px; font-family: inherit;
+    }
+    .footer-right { display: flex; gap: 6px; }
+    .btn-all {
+      padding: 5px 14px; border: 1px solid #475569; border-radius: 6px;
+      background: #334155; color: #94a3b8; font-size: 11px; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: all 0.15s;
+    }
+    .btn-all:hover { background: #475569; color: #e2e8f0; }
+    .btn-all:disabled { opacity: 0.5; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <header class="viewer-header">
+    <div class="viewer-title">
+      <span class="viewer-logo">🧠</span>
+      <h1>CBT Bridge AI <span class="viewer-subtitle">PDF Translation</span></h1>
+    </div>
+    <div class="viewer-meta" id="pdf-meta"></div>
+  </header>
+
+  <main class="viewer-main">
+    <div class="viewer-panel viewer-pdf">
+      <div class="panel-header">📄 原文 PDF</div>
+      <iframe id="pdf-iframe" class="pdf-frame"></iframe>
+    </div>
+
+    <div class="viewer-panel viewer-translation">
+      <div class="panel-header">🌐 翻訳</div>
+
+      <!-- Loading: 구조 분석 중 -->
+      <div id="state-loading" class="state-screen">
+        <div class="spinner"></div>
+        <p>PDF を分析中...</p>
+      </div>
+
+      <!-- Sections: 섹션별 번역 UI -->
+      <div id="state-sections" class="sections-panel" style="display:none;">
+        <div class="sections-header">
+          <h2 id="doc-title"></h2>
+          <div class="doc-info" id="doc-info"></div>
+          <div class="cost-info" id="cost-info"></div>
+        </div>
+        <div id="page-warning" class="page-warning" style="display:none;"></div>
+        <div class="sections-body" id="sections-body"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="viewer-footer" id="viewer-footer" style="display:none;">
+    <div class="footer-left">
+      <span class="footer-cost" id="footer-cost">💰 $0.00</span>
+      <span class="footer-budget">
+        上限: $<input type="number" id="budget-input" value="1.00" step="0.10" min="0.10" class="budget-input" />
+      </span>
+    </div>
+    <div class="footer-right">
+      <button class="btn-all" id="btn-translate-all">📋 全セクション翻訳</button>
+    </div>
+  </footer>
+
+  <script src="pdfviewer.ts" type="module"></script>
+</body>
+</html>

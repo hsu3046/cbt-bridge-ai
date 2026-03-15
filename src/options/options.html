@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>CBT Bridge AI — 設定</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Inter", "Noto Sans JP", system-ui, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 32px 24px;
+      color: #0f172a;
+      background: #f8fafc;
+      -webkit-font-smoothing: antialiased;
+    }
+    .page-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 4px;
+    }
+    .page-header svg {
+      width: 24px; height: 24px; stroke: #6366f1;
+      stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round;
+    }
+    h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+    .subtitle { color: #64748b; margin-bottom: 24px; font-size: 13px; }
+    .section {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .section h2 {
+      font-size: 14px; margin-bottom: 14px; color: #334155; font-weight: 600;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section h2 svg {
+      width: 16px; height: 16px;
+      stroke: #6366f1; stroke-width: 2; fill: none;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block; font-size: 12px; font-weight: 500;
+      margin-bottom: 5px; color: #475569;
+    }
+    .field .hint { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+    .field .hint a { color: #3b82f6; text-decoration: none; }
+    .field .hint a:hover { text-decoration: underline; }
+    .field input[type="text"],
+    .field input[type="password"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+      font-family: "SF Mono", "Fira Code", monospace;
+      transition: border-color 0.2s;
+    }
+    .field input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    }
+    .field input:disabled {
+      background: #f8fafc; color: #94a3b8;
+      cursor: not-allowed;
+    }
+    .btn-save {
+      padding: 10px 28px;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600;
+      display: inline-flex; align-items: center; gap: 7px;
+      transition: all 0.15s;
+    }
+    .btn-save:hover {
+      opacity: 0.9; transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+    }
+    .btn-save svg {
+      width: 15px; height: 15px; stroke: white;
+      stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .saved {
+      color: #16a34a; font-size: 12px; margin-left: 12px;
+      display: none; font-weight: 500;
+    }
+    .saved.show { display: inline-flex; align-items: center; gap: 4px; }
+    .saved svg {
+      width: 14px; height: 14px; stroke: #16a34a;
+      stroke-width: 2; fill: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-header">
+    <svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg>
+    <h1>CBT Bridge AI 設定</h1>
+  </div>
+
+  <div class="section">
+    <h2>
+      <svg viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
+      Gemini API キー（BYOK）
+    </h2>
+    <div class="field">
+      <label>API Key</label>
+      <input type="password" id="api-key" placeholder="AIza..." />
+      <p class="hint"><a href="https://aistudio.google.com" target="_blank">Google AI Studio</a> で取得してください</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>
+      <svg viewBox="0 0 24 24"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+      翻訳設定
+    </h2>
+    <div class="field">
+      <label>ソース言語</label>
+      <input type="text" value="English" disabled />
+    </div>
+    <div class="field">
+      <label>ターゲット言語</label>
+      <input type="text" value="日本語" disabled />
+    </div>
+  </div>
+
+  <button class="btn-save" id="btn-save">
+    <svg viewBox="0 0 24 24"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>
+    保存
+  </button>
+  <span class="saved" id="saved-msg">
+    <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+    保存しました
+  </span>
+
+  <script src="options.ts" type="module"></script>
+</body>
+</html>

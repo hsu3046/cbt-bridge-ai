@@ -1,0 +1,282 @@
+/* ============================================================
+   CBT Bridge AI — Overlay Styles
+   翻訳オーバーレイ + 用語ポップアップ + フローティング結果
+   ============================================================ */
+
+/* ---- 翻訳オーバーレイ ---- */
+
+.cbt-bridge-overlay {
+  display: block;
+  margin: 4px 0;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  color: #1e3a5f;
+  font-size: 0.92em;
+  line-height: 1.6;
+  font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", sans-serif;
+  transition: opacity 0.3s ease;
+}
+
+.cbt-bridge-overlay.cbt-bridge-loading {
+  color: #94a3b8;
+  font-style: italic;
+  animation: cbt-bridge-pulse 1.5s infinite;
+}
+
+@keyframes cbt-bridge-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ---- 翻訳ボタン（ホバー時表示 → クリックで実行） ---- */
+
+.cbt-bridge-translate-btn {
+  position: absolute;
+  z-index: 2147483647;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  transition: all 0.15s;
+  font-family: "Inter", "Noto Sans JP", system-ui, sans-serif;
+  animation: cbt-bridge-fade-in 0.2s ease;
+  white-space: nowrap;
+}
+
+.cbt-bridge-translate-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+@keyframes cbt-bridge-fade-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ---- 用語追加ポップアップ ---- */
+
+.cbt-bridge-term-popup {
+  position: absolute;
+  z-index: 999999;
+  width: 320px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  font-family: "Inter", "Noto Sans JP", system-ui, sans-serif;
+  font-size: 13px;
+  overflow: hidden;
+}
+
+.cbt-bridge-term-popup-header {
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.cbt-bridge-term-popup-body {
+  padding: 12px 14px;
+}
+
+.cbt-bridge-term-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.cbt-bridge-term-row label {
+  flex-shrink: 0;
+  width: 52px;
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.cbt-bridge-term-original {
+  font-weight: 600;
+  color: #1e293b;
+  word-break: break-all;
+}
+
+.cbt-bridge-term-suggestion {
+  color: #3b82f6;
+  font-weight: 500;
+}
+
+.cbt-bridge-term-input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: "Noto Sans JP", sans-serif;
+}
+
+.cbt-bridge-term-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.cbt-bridge-term-popup-footer {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid #f1f5f9;
+  justify-content: flex-end;
+}
+
+/* ---- ボタン ---- */
+
+.cbt-bridge-btn {
+  padding: 6px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: white;
+  color: #64748b;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.cbt-bridge-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.cbt-bridge-btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white;
+  border: none;
+  font-weight: 500;
+}
+
+.cbt-bridge-btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+/* ---- フローティング翻訳結果 ---- */
+
+.cbt-bridge-floating {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999999;
+  width: 480px;
+  max-height: 70vh;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  font-family: "Inter", "Noto Sans JP", system-ui, sans-serif;
+  animation: cbt-bridge-slide-in 0.3s ease;
+  overflow: hidden;
+}
+
+@keyframes cbt-bridge-slide-in {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.cbt-bridge-floating-header {
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cbt-bridge-model-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 50px;
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  line-height: 1;
+}
+
+.cbt-bridge-model-badge svg {
+  width: 11px;
+  height: 11px;
+}
+
+.cbt-bridge-floating-body {
+  padding: 14px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #1e293b;
+  overflow-y: auto;
+  max-height: calc(70vh - 60px);
+}
+
+.cbt-bridge-floating-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.cbt-bridge-floating-close:hover {
+  color: white;
+}
+
+.cbt-bridge-floating-expand {
+  position: absolute;
+  top: 8px;
+  right: 62px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px;
+  transition: color 0.15s;
+}
+
+.cbt-bridge-floating-expand:hover {
+  color: white;
+}
+
+.cbt-bridge-floating-minimize {
+  position: absolute;
+  top: 8px;
+  right: 36px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px;
+  transition: color 0.15s;
+}
+
+.cbt-bridge-floating-minimize:hover {
+  color: white;
+}
